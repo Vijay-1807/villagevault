@@ -97,7 +97,7 @@ const Login = () => {
                 pattern="[0-9]*"
                 required
                 className="w-full px-4 sm:px-5 py-3.5 sm:py-4 pl-12 sm:pl-14 bg-white border-2 border-gray-300 rounded-xl text-base sm:text-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 min-h-[52px] touch-manipulation shadow-md"
-                placeholder="9876543210"
+                placeholder="7286973788"
                 value={phoneNumber}
                 onChange={(e) => {
                   const value = e.target.value.replace(/\D/g, '')

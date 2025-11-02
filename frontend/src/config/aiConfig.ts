@@ -1,35 +1,34 @@
 // AI Configuration for VillageVault
 export const AI_CONFIG = {
   // OpenRouter API Configuration
-  API_KEY: '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',
+  API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
   BASE_URL: 'https://openrouter.ai/api/v1',
   
   // Plan Configuration
   IS_PAID_PLAN: true, // Set to true for unlimited free usage
   
-  // Free Plan Settings - Using Gemini Pro (1st priority)
+  // Free Plan Settings - Using Direct Gemini Pro (1st priority)
   FREE_PLAN: {
-    MODEL: 'gemini-pro-rapidapi', // Gemini Pro via RapidAPI (1st)
-    RATE_LIMIT_DELAY: 3000, // 3 second delay to avoid rate limits
-    MAX_REQUESTS_PER_MINUTE: 20, // Reduced to be more conservative
-    DAILY_LIMIT: 100, // Reduced daily limit
+    MODEL: 'gemini-pro-direct', // Direct Gemini Pro API (1st - more reliable)
+    RATE_LIMIT_DELAY: 2000, // 2 second delay to avoid rate limits
+    MAX_REQUESTS_PER_MINUTE: 60, // Higher limit with direct API
+    DAILY_LIMIT: 1000, // Higher daily limit
   },
   
   // Paid Plan Settings (unlimited free usage)
   PAID_PLAN: {
-    MODEL: 'gemini-pro-rapidapi', // Gemini Pro via RapidAPI (1st)
+    MODEL: 'gemini-pro-direct', // Direct Gemini Pro API (1st - more reliable)
     RATE_LIMIT_DELAY: 0, // No delay for unlimited usage
     MAX_REQUESTS_PER_MINUTE: 1000, // Much higher limit
     DAILY_LIMIT: -1, // Unlimited
   },
   
-  // RapidAPI Gemini Pro Configuration
-  RAPIDAPI_GEMINI: {
-    ENABLED: true,
-    API_KEY: 'f46182d631msh53ac1ab80e43ca3p15d946jsn2a90685ffdc9',
-    BASE_URL: 'https://gemini-pro-ai.p.rapidapi.com',
-    MODEL: 'gemini-pro-rapidapi',
-    HOST: 'gemini-pro-ai.p.rapidapi.com'
+  // Direct Google Gemini API Configuration
+  GEMINI_DIRECT: {
+    ENABLED: true, // Using direct Gemini API
+    API_KEY: import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyAAv7Uxf6itcWBHdwgeezBnHthvYii8vXQ',
+    BASE_URL: 'https://generativelanguage.googleapis.com/v1', // Using v1 for better compatibility
+    MODEL: 'gemini-pro-direct'
   },
 
   // Alternative Free Models (ordered by preference)

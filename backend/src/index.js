@@ -15,6 +15,7 @@ const alertRoutes = require('./routes/alerts');
 const messageRoutes = require('./routes/messages');
 const sosRoutes = require('./routes/sos');
 const villageRoutes = require('./routes/villages');
+const weatherRoutes = require('./routes/weather');
 const { setupSocketHandlers } = require('./socket/socketHandlers');
 const { setIOInstance } = require('./services/alertService');
 
@@ -74,6 +75,7 @@ app.use('/api/alerts', alertRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/sos', sosRoutes);
 app.use('/api/villages', villageRoutes);
+app.use('/api/weather', weatherRoutes);
 
 // Socket.IO setup
 setupSocketHandlers(io);

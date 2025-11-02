@@ -22,6 +22,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null
+  token: string | null
   login: (phoneNumber: string) => Promise<void>
   verifyOTP: (phoneNumber: string, otp: string) => Promise<void>
   register: (userData: RegisterData) => Promise<void>
@@ -53,10 +54,11 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
+  const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [recaptchaVerifier, setRecaptchaVerifier] = useState<RecaptchaVerifier | null>(null)
-  const [isTestUser, setIsTestUser] = useState(false)
-  const [isInitialized, setIsInitialized] = useState(false)
+  // Note: isTestUser state is used to track test user status (stored in localStorage but state needed for logout cleanup)
+  const [, setIsTestUser] = useState(false) // State setter used but value not directly accessed (prefer localStorage check)
 
   // Debug function to test OTP popup
   const testOTPPopup = () => {
@@ -134,8 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     }
     
-    // Mark as initialized and stop loading
-    setIsInitialized(true)
+    // Stop loading - initialization complete
     setLoading(false)
 
     // Listen for authentication state changes (only for real Firebase users)
@@ -150,19 +151,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
             if (userDoc.exists()) {
               const userData = userDoc.data()
-              const userObj = {
+              const userObj: User = {
                 id: firebaseUser.uid,
                 phoneNumber: userData.phoneNumber,
                 name: userData.name,
-                role: userData.role,
+                role: userData.role as 'SARPANCH' | 'VILLAGER',
                 pinCode: userData.pinCode,
                 villageName: userData.villageName,
                 villageId: userData.villageId,
                 isVerified: userData.isVerified
               }
               setUser(userObj)
+              // Get Firebase ID token
+              const firebaseToken = await firebaseUser.getIdToken()
+              setToken(firebaseToken)
               // Store in localStorage for persistence
               localStorage.setItem('user', JSON.stringify(userObj))
+              localStorage.setItem('token', firebaseToken)
             }
           } catch (error) {
             console.error('Error fetching user data:', error)
@@ -170,7 +175,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } else {
           setUser(null)
+          setToken(null)
           localStorage.removeItem('user')
+          localStorage.removeItem('token')
         }
       })
     }
@@ -312,17 +319,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (isTestPhone && randomOTPs.includes(otp)) {
         // For test OTP, create a mock user with the correct role
-        const mockUser = {
+        const mockUser: User = {
           id: 'test-user-id',
           phoneNumber: phoneNumber,
           name: testUserInfo.name,
-          role: testUserInfo.role,
+          role: testUserInfo.role as 'SARPANCH' | 'VILLAGER',
           pinCode: pendingUserData?.pinCode || '522508',
           villageName: pendingUserData?.villageName || 'Test Village',
           villageId: 'test-village-id',
           isVerified: true
         }
         setUser(mockUser)
+        setToken('test-token')
         setIsTestUser(true)
         
         // Store user data in localStorage for persistence
@@ -367,16 +375,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
       if (userDoc.exists()) {
         const userData = userDoc.data()
-        setUser({
+        const userObj: User = {
           id: firebaseUser.uid,
           phoneNumber: userData.phoneNumber,
           name: userData.name,
-          role: userData.role,
+          role: userData.role as 'SARPANCH' | 'VILLAGER',
           pinCode: userData.pinCode,
           villageName: userData.villageName,
           villageId: userData.villageId,
           isVerified: userData.isVerified
-        })
+        }
+        setUser(userObj)
+        // Get Firebase ID token for authentication
+        const firebaseToken = await firebaseUser.getIdToken()
+        setToken(firebaseToken)
+        localStorage.setItem('token', firebaseToken)
         toast.success('Login successful!', {
           style: {
             background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
@@ -531,9 +544,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await firebaseSignOut(auth)
-    setUser(null)
+      setUser(null)
+      setToken(null)
       setIsTestUser(false)
       localStorage.removeItem('user')
+      localStorage.removeItem('token')
       localStorage.removeItem('isTestUser')
       localStorage.removeItem('phoneNumber')
       // Clear test data
@@ -558,6 +573,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextType = {
     user,
+    token,
     login,
     verifyOTP,
     register,

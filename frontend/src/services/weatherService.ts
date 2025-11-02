@@ -103,6 +103,50 @@ class WeatherService {
     }
   }
 
+  // Reverse geocoding: Get city name from coordinates
+  async getCityFromCoordinates(lat: number, lon: number): Promise<LocationData> {
+    try {
+      // Using free Nominatim reverse geocoding service
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`)
+      
+      if (!response.ok) {
+        throw new Error('Reverse geocoding service unavailable')
+      }
+      
+      const data = await response.json()
+      
+      if (data && data.address) {
+        const address = data.address
+        return {
+          lat: lat,
+          lon: lon,
+          city: address.city || address.town || address.village || address.county || 'Current Location',
+          state: address.state || address.region || 'Unknown',
+          country: address.country || 'Unknown'
+        }
+      }
+      
+      // Fallback if reverse geocoding fails
+      return {
+        lat: lat,
+        lon: lon,
+        city: `Location (${lat.toFixed(4)}, ${lon.toFixed(4)})`,
+        state: 'Unknown',
+        country: 'Unknown'
+      }
+    } catch (error) {
+      console.log('Reverse geocoding error:', error)
+      // Return coordinates if reverse geocoding fails
+      return {
+        lat: lat,
+        lon: lon,
+        city: `Current Location (${lat.toFixed(4)}, ${lon.toFixed(4)})`,
+        state: 'Unknown',
+        country: 'Unknown'
+      }
+    }
+  }
+
   // Get weather data from Open-Meteo (Free API)
   async getWeatherData(lat: number, lon: number): Promise<WeatherData> {
     try {
@@ -165,7 +209,7 @@ class WeatherService {
 
 
   // Helper methods
-  private getApproximateCoordinates(state: string, district: string): {lat: number, lon: number} {
+  private getApproximateCoordinates(state: string, _district: string): {lat: number, lon: number} {
     // Approximate coordinates for major Indian cities
     const coordinates: {[key: string]: {lat: number, lon: number}} = {
       'Andhra Pradesh': { lat: 16.3067, lon: 80.4365 },

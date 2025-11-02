@@ -1,28 +1,30 @@
 services:
-  # Combined Backend + Frontend Service
+  # Backend Web Service (API) - Using Firebase Firestore as Database
   - type: web
-    name: villagevault
+    name: villagevault-backend
     runtime: node
     plan: free
     region: singapore
     branch: main
-    buildCommand: npm install && cd frontend && npm install && npm run build && cd ../backend && npm install && npx prisma generate
-    startCommand: cd backend && npm start
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 5000
-      - key: DATABASE_URL
-        fromDatabase:
-          name: villagevault-db
-          property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: FRONTEND_URL
-        generateValue: true
+        fromService:
+          type: web
+          name: villagevault-frontend
+          property: host
+      # Firebase Configuration (Firestore Database)
+      # Add these manually in Render Dashboard
       - key: FIREBASE_PROJECT_ID
         sync: false
       - key: FIREBASE_PRIVATE_KEY_ID
@@ -33,6 +35,8 @@ services:
         sync: false
       - key: FIREBASE_CLIENT_ID
         sync: false
+      # Twilio Configuration (SMS)
+      # Add these manually in Render Dashboard
       - key: TWILIO_ACCOUNT_SID
         sync: false
       - key: TWILIO_AUTH_TOKEN
@@ -40,10 +44,19 @@ services:
       - key: TWILIO_PHONE_NUMBER
         sync: false
 
-  # PostgreSQL Database
-  - type: pspg
-    name: villagevault-db
+  # Frontend Web Service (React App)
+  - type: web
+    name: villagevault-frontend
+    runtime: node
     plan: free
     region: singapore
-    databaseName: villagevault
-    databaseUser: villagevault_user
+    branch: main
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s dist -l $PORT
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: villagevault-backend
+          property: host

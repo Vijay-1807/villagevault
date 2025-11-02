@@ -83,10 +83,19 @@ const AIChatPage = () => {
     setCurrentModel(modelName)
     setShowModelSwitcher(false)
     // Add a message about model switch
+    let modelDisplayName = ''
+    if (modelName === 'gemini-pro-direct') {
+      modelDisplayName = 'Gemini Pro (Direct)'
+    } else if (modelName === 'gemini-pro-rapidapi') {
+      modelDisplayName = 'Gemini Pro (RapidAPI)'
+    } else {
+      modelDisplayName = modelName.split('/').pop()?.replace(':free', '') || modelName
+    }
+    
     const switchMessage: Message = {
       id: Date.now().toString(),
       role: 'assistant',
-      content: `✅ Switched to ${modelName.split('/').pop()} model. Ready to help!`,
+      content: `✅ Switched to ${modelDisplayName} model. Ready to help!`,
       timestamp: new Date()
     }
     setMessages(prev => [...prev, switchMessage])
@@ -112,7 +121,15 @@ const AIChatPage = () => {
               <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 truncate">
                 VillageVault AI
               </h1>
-              <p className="text-xs sm:text-sm text-gray-600 truncate mt-1">Powered by {currentModel.split('/').pop()}</p>
+              <p className="text-xs sm:text-sm text-gray-600 truncate mt-1">
+                Powered by {
+                  currentModel === 'gemini-pro-direct' 
+                    ? 'Gemini Pro' 
+                    : currentModel === 'gemini-pro-rapidapi'
+                    ? 'Gemini Pro (RapidAPI)'
+                    : currentModel.split('/').pop()?.replace(':free', '') || currentModel
+                }
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -136,9 +153,23 @@ const AIChatPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {aiService.getAvailableModels().map((model) => {
                 const isCurrent = currentModel === model
-                const isGemini = model === 'gemini-pro-rapidapi'
-                const displayName = isGemini ? 'Gemini Pro' : model.split('/').pop()?.replace(':free', '') || model
-                const providerName = isGemini ? 'RapidAPI' : model.split('/')[0]
+                const isGeminiDirect = model === 'gemini-pro-direct'
+                const isGeminiRapidAPI = model === 'gemini-pro-rapidapi'
+                const isGemini = isGeminiDirect || isGeminiRapidAPI
+                
+                let displayName = ''
+                let providerName = ''
+                
+                if (isGeminiDirect) {
+                  displayName = 'Gemini Pro'
+                  providerName = 'Google'
+                } else if (isGeminiRapidAPI) {
+                  displayName = 'Gemini Pro'
+                  providerName = 'RapidAPI'
+                } else {
+                  displayName = model.split('/').pop()?.replace(':free', '') || model
+                  providerName = model.split('/')[0]
+                }
                 
                 return (
                   <button
@@ -156,7 +187,9 @@ const AIChatPage = () => {
                     </div>
                     <div className="text-xs text-gray-500">{providerName}</div>
                     {isGemini && (
-                      <div className="text-xs text-blue-600 mt-1">⚡ Powered by Google Gemini</div>
+                      <div className="text-xs text-blue-600 mt-1">
+                        ⚡ Powered by Google Gemini {isGeminiDirect ? '(Direct)' : '(RapidAPI)'}
+                      </div>
                     )}
                   </button>
                 )

@@ -13,27 +13,27 @@ const customTheme = {
   border: '#e5e7eb' // gray-200
 }
 
-// Custom button styles
-const customButtons = {
-  confirmButton: {
-    background: customTheme.primary,
-    borderRadius: '12px',
-    padding: '12px 24px',
-    fontWeight: '600',
-    fontSize: '14px',
-    border: 'none',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-  },
-  cancelButton: {
-    background: '#ffffff',
-    borderRadius: '12px',
-    padding: '12px 24px',
-    fontWeight: '500',
-    fontSize: '14px',
-    border: '1px solid #f97316',
-    color: '#374151'
-  }
-}
+// Custom button styles (for future use)
+// const customButtons = {
+//   confirmButton: {
+//     background: customTheme.primary,
+//     borderRadius: '12px',
+//     padding: '12px 24px',
+//     fontWeight: '600',
+//     fontSize: '14px',
+//     border: 'none',
+//     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+//   },
+//   cancelButton: {
+//     background: '#ffffff',
+//     borderRadius: '12px',
+//     padding: '12px 24px',
+//     fontWeight: '500',
+//     fontSize: '14px',
+//     border: '1px solid #f97316',
+//     color: '#374151'
+//   }
+// }
 
 // Base configuration
 const baseConfig = {
@@ -79,7 +79,6 @@ export const alertService = {
       confirmButtonColor: customTheme.success,
       background: customTheme.background,
       color: customTheme.text,
-      confirmButtonClass: 'villagevault-btn-success',
       timer: 3000,
       timerProgressBar: true
     })
@@ -96,7 +95,6 @@ export const alertService = {
       confirmButtonColor: customTheme.danger,
       background: customTheme.background,
       color: customTheme.text,
-      confirmButtonClass: 'villagevault-btn-danger',
       timer: 4000,
       timerProgressBar: true
     })
@@ -112,8 +110,7 @@ export const alertService = {
       confirmButtonText: 'OK',
       confirmButtonColor: customTheme.warning,
       background: customTheme.background,
-      color: customTheme.text,
-      confirmButtonClass: 'villagevault-btn-warning'
+      color: customTheme.text
     })
   },
 
@@ -127,8 +124,7 @@ export const alertService = {
       confirmButtonText: 'OK',
       confirmButtonColor: customTheme.info,
       background: customTheme.background,
-      color: customTheme.text,
-      confirmButtonClass: 'villagevault-btn-info'
+      color: customTheme.text
     })
   },
 
@@ -146,8 +142,6 @@ export const alertService = {
       cancelButtonColor: '#6b7280',
       background: customTheme.background,
       color: customTheme.text,
-      confirmButtonClass: 'villagevault-btn-confirm',
-      cancelButtonClass: 'villagevault-btn-cancel',
       focusCancel: true
     })
   },

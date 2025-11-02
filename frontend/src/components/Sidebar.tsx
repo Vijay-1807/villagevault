@@ -6,11 +6,11 @@ import {
   AlertTriangle, 
   MessageSquare, 
   Phone, 
-  User, 
   MapPin,
   LogOut,
   ChevronRight,
-  Bot
+  Bot,
+  Cloud
 } from 'lucide-react'
 
 const Sidebar = ({ isMobileOpen, onMobileClose }: { isMobileOpen?: boolean, onMobileClose?: () => void }) => {
@@ -22,8 +22,8 @@ const Sidebar = ({ isMobileOpen, onMobileClose }: { isMobileOpen?: boolean, onMo
     { name: t('nav.alerts'), href: '/alerts', icon: AlertTriangle },
     { name: t('nav.messages'), href: '/messages', icon: MessageSquare },
     { name: t('nav.sos'), href: '/sos', icon: Phone },
-    { name: 'VillageVault AI', href: '/ai-chat', icon: Bot, isAI: true },
-    { name: t('nav.profile'), href: '/profile', icon: User },
+    { name: t('ai.title'), href: '/ai-chat', icon: Bot, isAI: true },
+    { name: t('weather.title'), href: '/enhanced-weather', icon: Cloud },
     { name: t('nav.village'), href: '/village', icon: MapPin },
   ]
 
@@ -105,21 +105,36 @@ const Sidebar = ({ isMobileOpen, onMobileClose }: { isMobileOpen?: boolean, onMo
           {/* User Profile Section */}
           <div className="flex-shrink-0 border-t border-orange-500/10 p-6">
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/25">
-                  <span className="text-white font-bold text-lg">
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </span>
+              <NavLink
+                to="/profile"
+                onClick={handleNavClick}
+                className={({ isActive }) =>
+                  `group flex items-center flex-1 min-w-0 space-x-4 rounded-xl p-2 -m-2 transition-all duration-200 ease-in-out ${
+                    isActive
+                      ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20'
+                      : 'hover:bg-orange-500/10'
+                  }`
+                }
+              >
+                <div className="relative flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/25">
+                    <span className="text-white font-bold text-lg">
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></div>
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
-                <p className="text-xs text-orange-400 capitalize font-medium">{user?.role?.toLowerCase()}</p>
-              </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
+                  <p className="text-xs text-orange-400 capitalize font-medium">{user?.role?.toLowerCase()}</p>
+                </div>
+              </NavLink>
               <button
-                onClick={logout}
-                className="p-2.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 group"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  logout()
+                }}
+                className="p-2.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 group flex-shrink-0"
                 title={t('auth.logout')}
               >
                 <LogOut className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
@@ -184,21 +199,36 @@ const Sidebar = ({ isMobileOpen, onMobileClose }: { isMobileOpen?: boolean, onMo
               {/* Mobile User Profile */}
               <div className="p-6 border-t border-orange-500/10">
                 <div className="flex items-center space-x-4">
-                  <div className="relative">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/25">
-                      <span className="text-white font-bold text-lg">
-                        {user?.name?.charAt(0).toUpperCase()}
-                      </span>
+                  <NavLink
+                    to="/profile"
+                    onClick={handleNavClick}
+                    className={({ isActive }) =>
+                      `group flex items-center flex-1 min-w-0 space-x-4 rounded-xl p-2 -m-2 transition-all duration-200 ease-in-out ${
+                        isActive
+                          ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20'
+                          : 'hover:bg-orange-500/10'
+                      }`
+                    }
+                  >
+                    <div className="relative flex-shrink-0">
+                      <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/25">
+                        <span className="text-white font-bold text-lg">
+                          {user?.name?.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></div>
                     </div>
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
-                    <p className="text-xs text-orange-400 capitalize font-medium">{user?.role?.toLowerCase()}</p>
-                  </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
+                      <p className="text-xs text-orange-400 capitalize font-medium">{user?.role?.toLowerCase()}</p>
+                    </div>
+                  </NavLink>
                   <button
-                    onClick={logout}
-                    className="p-2.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 group"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      logout()
+                    }}
+                    className="p-2.5 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 group flex-shrink-0"
                     title={t('auth.logout')}
                   >
                     <LogOut className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />

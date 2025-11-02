@@ -12,6 +12,7 @@ import SOS from './pages/SOS'
 import Profile from './pages/Profile'
 import VillageInfo from './pages/VillageInfo'
 import AIChat from './pages/AIChat'
+import EnhancedWeather from './pages/EnhancedWeather'
 import LoadingSpinner from './components/LoadingSpinner'
 import SecureNavigation from './components/SecureNavigation'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -108,6 +109,7 @@ function App() {
             <Route path="profile" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
             <Route path="village" element={<ErrorBoundary><VillageInfo /></ErrorBoundary>} />
             <Route path="ai-chat" element={<ErrorBoundary><AIChat /></ErrorBoundary>} />
+            <Route path="enhanced-weather" element={<ErrorBoundary><EnhancedWeather /></ErrorBoundary>} />
           </Route>
           
           {/* Catch all route - redirect based on auth status */}
