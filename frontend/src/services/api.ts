@@ -1,6 +1,21 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+// In production (single service), use relative path or env variable
+// In development, use localhost or env variable
+const getApiUrl = () => {
+  // Check if VITE_API_URL is set (for custom deployments)
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL
+  }
+  // In production (single service), use relative path
+  if (import.meta.env.MODE === 'production') {
+    return ''
+  }
+  // In development, use localhost
+  return 'http://localhost:5000'
+}
+
+const API_URL = getApiUrl()
 
 export const api = axios.create({
   baseURL: `${API_URL}/api`,

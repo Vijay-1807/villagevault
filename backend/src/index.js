@@ -79,6 +79,33 @@ app.use('/api/villages', villageRoutes);
 setupSocketHandlers(io);
 setIOInstance(io);
 
+// Serve frontend static files in production
+if (process.env.NODE_ENV === 'production') {
+  const frontendPath = path.join(__dirname, '../../frontend/dist');
+  const fs = require('fs');
+  
+  // Check if frontend build exists
+  if (fs.existsSync(frontendPath)) {
+    // Serve static files from frontend dist
+    app.use(express.static(frontendPath));
+    
+    // Handle React Router - send all non-API requests to index.html
+    app.get('*', (req, res, next) => {
+      // Don't handle API routes
+      if (req.path.startsWith('/api/')) {
+        return next();
+      }
+      // Serve index.html for all other routes
+      res.sendFile(path.join(frontendPath, 'index.html'));
+    });
+    
+    console.log('✅ Frontend static files served from:', frontendPath);
+  } else {
+    console.warn('⚠️  Frontend build not found at:', frontendPath);
+    console.warn('   API endpoints will still work, but frontend won\'t be served');
+  }
+}
+
 // Error handling
 app.use(notFound);
 app.use(errorHandler);
